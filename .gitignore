@@ -1,0 +1,6 @@
+ambiente_housing_api/
+__pycache__/
+*.pyc
+*.pkl
+.env
+.vscode/

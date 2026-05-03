@@ -1,0 +1,23 @@
+artifact_path: file:C:/Users/quimb/OneDrive/Documents/Pruebas/Mercado Libre/mlops-housing-api/mlruns/1/models/m-1abb89d5c8884743af8d88ada89ef7f9/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.13.3
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.8.0
+    skops_trusted_types: null
+mlflow_version: 3.11.1
+model_id: m-1abb89d5c8884743af8d88ada89ef7f9
+model_size_bytes: 2844880
+model_uuid: m-1abb89d5c8884743af8d88ada89ef7f9
+prompts: null
+run_id: d554e99cead5406d9b36aacfb0313ed7
+utc_time_created: '2026-05-01 18:29:10.744670'
