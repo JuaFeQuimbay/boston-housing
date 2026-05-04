@@ -1,0 +1,35 @@
+{
+  "model_version": "de2171be",
+  "mlflow_run_id": "de2171bef7044596b7262d58c58fd9d0",
+  "trained_at": "2026-05-04T03:47:56.744390+00:00",
+  "git_sha": "200155e",
+  "model_type": "RandomForestRegressor",
+  "best_params": {
+    "model__max_depth": null,
+    "model__min_samples_leaf": 1,
+    "model__min_samples_split": 2,
+    "model__n_estimators": 200
+  },
+  "metrics": {
+    "cv_mae": 2.4007,
+    "test_mae": 2.0422,
+    "test_rmse": 2.918,
+    "test_mape": 11.1577,
+    "test_r2": 0.8839
+  },
+  "feature_order": [
+    "CRIM",
+    "ZN",
+    "INDUS",
+    "CHAS",
+    "NOX",
+    "RM",
+    "AGE",
+    "DIS",
+    "RAD",
+    "TAX",
+    "PTRATIO",
+    "B",
+    "LSTAT"
+  ]
+}
