@@ -1,0 +1,44 @@
+# Git
+.git/
+.gitignore
+.github/
+
+# Virtual environments
+ambiente_housing_api/
+.venv/
+venv/
+env/
+
+# Python caches
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Dev artifacts not needed in the runtime image
+notebooks/
+docs/
+reports/
+mlruns/
+mlartifacts/
+tests/
+data/
+
+# Build / packaging
+build/
+dist/
+*.egg-info/
+
+# Docs y configs no requeridos en runtime
+README.md
+docker-compose.yml
+.env
+.env.*
