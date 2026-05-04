@@ -7,7 +7,9 @@ import joblib
 import pandas as pd
 
 
-DEFAULT_MODEL_PATH = Path("models/model.pkl")
+# 🔥 Ruta robusta independiente del working directory
+BASE_DIR = Path(__file__).resolve().parent.parent
+DEFAULT_MODEL_PATH = BASE_DIR / "models" / "model.pkl"
 
 
 def load_model(model_path: Union[str, Path] = DEFAULT_MODEL_PATH):
