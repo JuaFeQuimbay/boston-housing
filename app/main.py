@@ -1,8 +1,10 @@
 # app/main.py
 
 import logging
+import os
 import time
 
+import numpy as np
 import pandas as pd
 from fastapi import FastAPI, HTTPException
 
@@ -13,7 +15,14 @@ from app.schemas import HousingFeatures, PredictionResponse
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-MODEL_VERSION = "v1"
+MODEL_VERSION = os.getenv("MODEL_VERSION", "v1")
+
+# Orden fijo de columnas: el ColumnTransformer fue ajustado con estos nombres.
+# Mantenerlo precomputado evita rehacer el cálculo en cada request.
+FEATURE_ORDER = [
+    "CRIM", "ZN", "INDUS", "CHAS", "NOX", "RM", "AGE",
+    "DIS", "RAD", "TAX", "PTRATIO", "B", "LSTAT",
+]
 
 app = FastAPI(
     title="Housing Price Prediction API",
@@ -26,10 +35,6 @@ model = load_model()
 
 @app.get("/health")
 def health_check():
-    """
-    Endpoint para validar que la API está activa.
-    """
-
     return {
         "status": "ok",
         "model_loaded": model is not None,
@@ -39,37 +44,35 @@ def health_check():
 
 @app.post("/predict", response_model=PredictionResponse)
 def predict(features: HousingFeatures):
-    """
-    Endpoint de inferencia para predecir el precio de una vivienda.
-    """
-
-    start_time = time.time()
+    start_time = time.perf_counter()
 
     try:
-        input_data = features.model_dump()
-        input_df = pd.DataFrame([input_data])
+        feature_dict = features.model_dump()
+        # Construir el DataFrame desde un array 2D con orden conocido es
+        # significativamente más rápido que pd.DataFrame([dict]).
+        row = np.array([[feature_dict[name] for name in FEATURE_ORDER]], dtype=np.float64)
+        input_df = pd.DataFrame(row, columns=FEATURE_ORDER)
 
-        prediction = model.predict(input_df)[0]
-        latency_ms = round((time.time() - start_time) * 1000, 2)
+        prediction = float(model.predict(input_df)[0])
+        latency_ms = round((time.perf_counter() - start_time) * 1000, 2)
 
         logger.info(
             {
                 "event": "prediction",
-                "prediction": float(prediction),
+                "prediction": prediction,
                 "latency_ms": latency_ms,
                 "model_version": MODEL_VERSION,
             }
         )
 
         return PredictionResponse(
-            prediction=float(prediction),
+            prediction=prediction,
             model_version=MODEL_VERSION,
         )
 
     except Exception as error:
         logger.exception("Error during prediction")
-
         raise HTTPException(
             status_code=500,
-            detail=f"Error during prediction: {str(error)}",
+            detail=f"Error during prediction: {error}",
         )
