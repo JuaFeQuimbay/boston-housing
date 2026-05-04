@@ -37,6 +37,9 @@ Thumbs.db
 mlruns/
 mlartifacts/
 
+# DVC local remote (cache compartido localmente, no debe ir a git)
+.dvc-storage/
+
 # Coverage / reports de tests
 .coverage
 htmlcov/
