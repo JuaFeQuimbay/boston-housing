@@ -1,5 +1,9 @@
 # src/train.py
 
+import json
+import os
+import subprocess
+from datetime import datetime, timezone
 from pathlib import Path
 
 import joblib
@@ -20,10 +24,30 @@ RANDOM_STATE = 42
 
 MODEL_DIR = Path("models")
 MODEL_PATH = MODEL_DIR / "model.pkl"
+METADATA_PATH = MODEL_DIR / "model_metadata.json"
 
 REPORTS_DIR = Path("reports")
 FEATURE_IMPORTANCE_PATH = REPORTS_DIR / "feature_importance.csv"
 PERMUTATION_IMPORTANCE_PATH = REPORTS_DIR / "permutation_importance.csv"
+
+
+def _resolve_git_sha() -> str:
+    """Devuelve el SHA del commit actual; 'unknown' si no hay repo o git falla."""
+
+    if env_sha := os.getenv("GITHUB_SHA"):
+        return env_sha[:7]
+
+    try:
+        result = subprocess.run(
+            ["git", "rev-parse", "--short", "HEAD"],
+            capture_output=True,
+            text=True,
+            check=True,
+            timeout=2,
+        )
+        return result.stdout.strip()
+    except (subprocess.SubprocessError, FileNotFoundError):
+        return "unknown"
 
 
 def train_model():
@@ -156,8 +180,30 @@ def train_model():
             artifact_path="model",
         )
 
+        run_id = mlflow.active_run().info.run_id
+        metadata = {
+            "model_version": run_id[:8],
+            "mlflow_run_id": run_id,
+            "trained_at": datetime.now(timezone.utc).isoformat(),
+            "git_sha": _resolve_git_sha(),
+            "model_type": "RandomForestRegressor",
+            "best_params": best_params,
+            "metrics": {
+                "cv_mae": round(best_cv_mae, 4),
+                "test_mae": round(metrics["mae"], 4),
+                "test_rmse": round(metrics["rmse"], 4),
+                "test_mape": round(metrics["mape"], 4),
+                "test_r2": round(metrics["r2"], 4),
+            },
+            "feature_order": feature_names,
+        }
+        METADATA_PATH.write_text(json.dumps(metadata, indent=2), encoding="utf-8")
+        mlflow.log_artifact(str(METADATA_PATH))
+
         print("Modelo entrenado correctamente")
         print(f"Modelo guardado en: {MODEL_PATH}")
+        print(f"Metadata guardada en: {METADATA_PATH}")
+        print(f"Versión del modelo: {metadata['model_version']}")
         print(f"Mejores hiperparámetros: {best_params}")
         print(f"Mejor MAE promedio en CV: {best_cv_mae:.4f}")
         print_metrics(metrics)
