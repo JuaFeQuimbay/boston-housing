@@ -1,0 +1,64 @@
+[project]
+name = "boston-housing-mlops-api"
+version = "0.1.0"
+description = "MLOps project for training and serving a housing price prediction model."
+readme = "README.md"
+requires-python = ">=3.11,<3.14"
+authors = [
+    { name = "Juan Felipe Quimbay" }
+]
+
+# 🔥 Dependencias mínimas (core del proyecto)
+dependencies = [
+    "pandas",
+    "numpy",
+    "scikit-learn",
+    "joblib"
+]
+
+# 🔥 Dependencias opcionales
+[project.optional-dependencies]
+
+# 👉 SOLO API (producción)
+inference = [
+    "fastapi",
+    "uvicorn",
+    "pydantic"
+]
+
+# 👉 Entrenamiento
+train = [
+    "mlflow",
+    "matplotlib",
+    "seaborn",
+    "notebook",
+    "jupyterlab"
+]
+
+# 👉 Desarrollo / testing
+dev = [
+    "pytest",
+    "httpx"
+]
+
+# 👉 Combo útil (opcional)
+all = [
+    "fastapi",
+    "uvicorn",
+    "pydantic",
+    "mlflow",
+    "matplotlib",
+    "seaborn",
+    "notebook",
+    "jupyterlab",
+    "pytest",
+    "httpx"
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
