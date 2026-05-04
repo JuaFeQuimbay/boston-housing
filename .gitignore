@@ -44,3 +44,7 @@ coverage.xml
 
 # Jupyter
 .ipynb_checkpoints/
+
+# Briefs / material no público del examen
+docs/*.pdf
+
