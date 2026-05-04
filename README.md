@@ -127,6 +127,56 @@ pytest tests/
 
 ---
 
+## 📦 Model artifact versioning (DVC)
+
+The trained model (`models/model.pkl`, ~7 MB) is tracked with
+[DVC](https://dvc.org/) instead of git. Git stores only `model.pkl.dvc`
+(a 97 B pointer file with the MD5 hash); the binary lives in the DVC
+cache and a remote.
+
+### Setup
+
+```powershell
+pip install ".[mlops]"
+```
+
+### Default remote (local)
+
+The repo is configured with a local remote at `.dvc-storage/`
+(gitignored). To populate it with the current model:
+
+```powershell
+dvc push
+```
+
+To recover the binary on a fresh clone (after it has been pushed):
+
+```powershell
+dvc pull
+```
+
+### Using a real remote
+
+For a multi-machine setup, swap the local remote for any DVC-supported
+backend (S3, GCS, Azure Blob, SSH, MinIO, …) without changing the rest
+of the workflow:
+
+```powershell
+dvc remote add -d origin s3://my-bucket/path
+dvc push
+```
+
+### Why DVC here
+
+- `models/model.pkl` is binary (~7 MB) and changes every retrain →
+  unsuitable for git.
+- The `.dvc` pointer file is a small, diffable YAML that lets git
+  track which model version belongs to each commit.
+- Anyone who clones the repo can recover the exact model used at any
+  past commit with `git checkout <sha> && dvc pull`.
+
+---
+
 ## 🔁 CI Pipeline
 
 GitHub Actions automatically:
