@@ -23,6 +23,8 @@ dependencies = [
 inference = [
     "fastapi",
     "uvicorn",
+    "uvloop; sys_platform != 'win32'",
+    "httptools",
     "pydantic"
 ]
 
@@ -45,6 +47,8 @@ dev = [
 all = [
     "fastapi",
     "uvicorn",
+    "uvloop; sys_platform != 'win32'",
+    "httptools",
     "pydantic",
     "mlflow",
     "matplotlib",
